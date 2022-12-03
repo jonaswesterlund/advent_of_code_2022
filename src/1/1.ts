@@ -13,7 +13,6 @@ function totalCaloriesByElves(): number[] {
   }
   return totalCaloriesByElves;
 }
-
 const sortedCalories = totalCaloriesByElves().sort().reverse();
 
 console.log(sortedCalories[0]);
