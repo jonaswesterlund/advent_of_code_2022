@@ -6,7 +6,7 @@
   "type": "module",
   "keywords": [],
   "scripts": {
-    "start": "tsc && node dist/3/3.js",
+    "start": "tsc && node dist/4/4.js",
     "build": "tsc"
   },
   "author": "",
