@@ -1,4 +1,4 @@
-import { readFile } from "../helpers.js";
+import { readFile } from "./helpers.js";
 
 function totalCaloriesByElves(): number[] {
   let currentCalories = 0;

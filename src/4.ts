@@ -1,4 +1,4 @@
-import { readFile } from "../helpers.js";
+import { readFile } from "./helpers.js";
 
 const input = readFile("4_cleaning");
 

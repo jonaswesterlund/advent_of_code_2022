@@ -1,4 +1,4 @@
-import { readFile } from "../helpers.js";
+import { readFile } from "./helpers.js";
 
 const strategy = readFile("2_rps");
 
