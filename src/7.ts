@@ -1,30 +1,90 @@
 import { readFile } from "./helpers.js";
 
 class FileTreeNode {
-    name: string;
-    size?: number;
-    files?: FileTreeNode[];
-    folders?: FileTreeNode[];
-    parentFolder?: FileTreeNode;
+  name: string;
+  size?: number;
+  files?: FileTreeNode[] = [];
+  folders?: FileTreeNode[] = [];
+  parentFolder?: FileTreeNode;
 
-    constructor(name: string, size: number) {
-        name = name;
-        size = size;
-    }
+  constructor(name: string, size: number) {
+    this.name = name;
+    this.size = size;
+  }
 }
 
 const input = readFile("7_test");
 
-let currentFileTreeNode = new FileTreeNode("/", undefined);
-for(let line of input.split("\r\n")) {
-    if(line === "$ cd /" || line.includes("ls")) {
-        continue;
+function createTreeNodeStructure() {
+  const rootNode = new FileTreeNode("/", 0);
+  let currentFileTreeNode = rootNode;
+  for (let line of input.split("\r\n")) {
+    if (line === "$ cd /" || line === "$ ls" || line.includes("dir ")) {
+      continue;
     }
     const splitLine = line.split(" ");
-    if(line.includes("cd")) {
-        const newFileTreeNode = new FileTreeNode(splitLine[splitLine.length-1], undefined);
-        currentFileTreeNode.folders.push(newFileTreeNode);
-        newFileTreeNode.parentFolder = currentFileTreeNode;
+    if (line === "$ cd ..") {
+      currentFileTreeNode = currentFileTreeNode.parentFolder;
+    } else if (line.includes("$ cd ")) {
+      const newFolder = new FileTreeNode(splitLine[splitLine.length - 1], 0);
+      currentFileTreeNode.folders.push(newFolder);
+      newFolder.parentFolder = currentFileTreeNode;
+      currentFileTreeNode = newFolder;
+    } else {
+      const size = Number(splitLine[0]);
+      const fileName = splitLine[1];
+      const newFile = new FileTreeNode(fileName, size);
+      currentFileTreeNode.files.push(newFile);
+      newFile.parentFolder = currentFileTreeNode;
     }
+  }
+  return rootNode;
 }
 
+function addSizesThroughPostOrderTraversal(node: FileTreeNode) {
+  for (let folder of node.folders) {
+    addSizesThroughPostOrderTraversal(folder);
+  }
+  for (let file of node.files) {
+    addSizesThroughPostOrderTraversal(file);
+  }
+  if (node.parentFolder) {
+    node.parentFolder.size += node.size;
+  }
+}
+
+function sumSizesUnder100000(node: FileTreeNode, sum: number) {
+  if (node.size <= 100000) {
+    sum += node.size;
+  }
+  for (let folder of node.folders) {
+    sum += sumSizesUnder100000(folder, 0);
+  }
+  return sum;
+}
+
+function findSmallestRequiredForDelete(
+  node: FileTreeNode,
+  lowest: number,
+  required: number
+) {
+  if (node.size < lowest && node.size >= required) {
+    lowest = node.size;
+  }
+  for (let folder of node.folders) {
+    sumSizesUnder100000(folder, lowest);
+  }
+  return lowest;
+}
+
+const rootFolder = createTreeNodeStructure();
+addSizesThroughPostOrderTraversal(rootFolder);
+const sum = sumSizesUnder100000(rootFolder, 0);
+const lowest = findSmallestRequiredForDelete(
+  rootFolder,
+  rootFolder.size,
+  30000000 - 70000000 + rootFolder.size
+);
+console.log(rootFolder.size);
+console.log(sum);
+console.log(lowest);
