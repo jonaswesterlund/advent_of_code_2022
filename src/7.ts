@@ -13,7 +13,7 @@ class FileTreeNode {
   }
 }
 
-const input = readFile("7_test");
+const input = readFile("7");
 
 function createTreeNodeStructure() {
   const rootNode = new FileTreeNode("/", 0);
@@ -71,10 +71,12 @@ function findSmallestRequiredForDelete(
   if (node.size < lowest && node.size >= required) {
     lowest = node.size;
   }
+  let sizes = [lowest];
   for (let folder of node.folders) {
-    sumSizesUnder100000(folder, lowest);
+    sizes.push(findSmallestRequiredForDelete(folder, lowest, required));
   }
-  return lowest;
+
+  return Math.min(...sizes);
 }
 
 const rootFolder = createTreeNodeStructure();
