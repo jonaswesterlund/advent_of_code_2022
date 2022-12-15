@@ -42,7 +42,7 @@ function calculateViewingDistance(trees) {
                 row === trees.length - 1 ||
                 col === 0 ||
                 col === trees.length - 1) {
-                //scenicScores[row][col] = 0;
+                scenicScores[row][col] = 0;
                 continue;
             }
             const selectedTree = trees[row][col];
